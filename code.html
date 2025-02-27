@@ -1,0 +1,83 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JET Code Editor</title>
+    <style>
+        button{
+         background-color: hsl(47, 92%, 79%);
+        }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; display:flex ;flex-direction:column ;background-color: grey;}
+        textarea { width: 100%; height: 200px; font-family: monospace; }
+        iframe { margin-left:05px;width: 100%; height: 600px; border: 1px solid #c0c0c0;margin-right:25px; display:inline;background-color:#f4f4f4}
+        button { font-family:bold;margin: 10px; padding: 10px 30px; display: inline;text-transform:uppercase;
+            clip-path:circle(25%);
+            
+         
+        }
+        pre{ margin:05px;color:darkgreen;background-color:#FFFFE0;
+            height:500px;weight:55%;padding:100px;
+            font-size:45px;
+             }
+    
+        
+    h2{ color:#E6EAFE;
+    }
+    </style>
+</head>
+<body>
+    <h2 >JET Code Editor</h2>
+    <textarea id="code" placeholder="Write HTML or Python code here..." ></textarea><br>
+    <button onclick="runCode()">Run HTML Code</button>
+    <button onclick="runPython()">Run Python Code</button>
+  
+    <iframe id="output"></iframe>
+    
+    
+    
+    <pre id="python-output" style="color:green;"></pre>
+   
+
+    
+    <script>
+        function runCode() {
+            const code = document.getElementById("code").value;
+            const output = document.getElementById("output");
+            output.srcdoc = code;
+        }
+    </script>
+
+    
+    <script>
+       async function runPython() {
+           const code = document.getElementById("code").value;
+           const url = "https://emkc.org/api/v2/piston/execute";
+           
+           const python = {
+               language: "python",
+               version: "3.10.0",
+               files: [{ name: "main.py", content: code }]
+           };
+           
+           try {
+               const response = await fetch(url, {
+                   method: "POST",
+                   headers: { "Content-Type": "application/json" },
+                   body: JSON.stringify(python)
+               });
+
+               const result = await response.json();
+
+           
+               document.getElementById("python-output").innerText = 
+                   result.run.stdout || result.run.stderr || "No output!";
+           } catch (error) {
+               document.getElementById("python-output").innerText = "Error: " + error.message;
+           }
+       }
+    </script>
+     
+</body>
+</html>
+
+
